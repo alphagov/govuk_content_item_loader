@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0
+
+- Add GraphQL traffic rates initializer.
+- Add request-level conditional content item loader for GraphQL traffic routing with `load` and `can_load_from_graphql?` methods.
+
 ## 0.1.0
 
 Initial release

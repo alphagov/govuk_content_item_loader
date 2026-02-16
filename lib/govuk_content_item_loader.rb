@@ -1,1 +1,2 @@
+require "govuk_content_item_loader/govuk_graphql_traffic_rates"
 require "govuk_content_item_loader/version"

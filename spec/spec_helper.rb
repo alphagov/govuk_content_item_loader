@@ -1,4 +1,5 @@
 require "active_support"
+require "climate_control"
 require "simplecov"
 SimpleCov.start
 

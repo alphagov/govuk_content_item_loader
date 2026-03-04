@@ -9,7 +9,9 @@ class GovukConditionalContentItemLoader
   end
 
   def load
-    can_load_from_graphql? ? content_item_from_graphql : content_item_from_content_store
+    return content_item_from_content_store unless can_load_from_graphql?
+
+    content_item_from_graphql || content_item_from_content_store
   end
 
   def can_load_from_graphql?
@@ -32,10 +34,10 @@ private
     publishing_api_client.graphql_live_content_item(base_path)
   rescue GdsApi::HTTPErrorResponse => e
     set_prometheus_labels(graphql_status_code: e.code)
-    raise e
-  rescue GdsApi::TimedOutException => e
+    false
+  rescue GdsApi::TimedOutException
     set_prometheus_labels(graphql_api_timeout: true)
-    raise e
+    false
   end
 
   def content_item_from_content_store

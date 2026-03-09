@@ -37,6 +37,7 @@ RSpec.describe GovukConditionalContentItemLoader do
     context "when can load from GraphQL" do
       before do
         allow(loader).to receive(:can_load_from_graphql?).and_return(true)
+        allow(content_store_client).to receive(:content_item).with(base_path).and_return("item_from_cs")
         allow(publishing_api_client).to receive(:graphql_live_content_item).with(base_path).and_return("graphql_item")
       end
 
@@ -50,19 +51,19 @@ RSpec.describe GovukConditionalContentItemLoader do
         expect(request.env["govuk.prometheus_labels"]["graphql_status_code"]).to eq(200)
       end
 
-      it "sets Prometheus labels and raises error for GdsApi::HTTPErrorResponse" do
+      it "sets Prometheus labels with error code information and falls back to content store" do
         error = GdsApi::HTTPErrorResponse.new(503)
         allow(publishing_api_client).to receive(:graphql_live_content_item).and_raise(error)
 
-        expect { loader.load }.to raise_error(GdsApi::HTTPErrorResponse)
+        expect(loader.load).to eq("item_from_cs")
         expect(request.env["govuk.prometheus_labels"]["graphql_status_code"]).to eq(503)
       end
 
-      it "sets Prometheus labels and raises error for GdsApi::TimedOutException" do
+      it "sets Prometheus labels with timeout information and falls back to content store" do
         error = GdsApi::TimedOutException.new
         allow(publishing_api_client).to receive(:graphql_live_content_item).and_raise(error)
 
-        expect { loader.load }.to raise_error(GdsApi::TimedOutException)
+        expect(loader.load).to eq("item_from_cs")
         expect(request.env["govuk.prometheus_labels"]["graphql_api_timeout"]).to be(true)
       end
     end

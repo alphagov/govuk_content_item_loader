@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+* Update dependencies
+
 ## 1.1.0
 
 - Add Content Store fallback for failed Graphql requests

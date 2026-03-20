@@ -86,6 +86,10 @@ loader = GovukGraphql::ConditionalContentItemLoader.new(
 
 The decision logic is also exposed via `can_load_from_graphql?`, allowing applications to make the routing decision themselves and implement custom fallback or error-handling behaviour if needed.
 
+## Test helpers
+
+There are also test helpers for stubbing responses in other apps. See [lib/test_helpers.rb](/lib/test_helpers.rb).
+
 ## Licence
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

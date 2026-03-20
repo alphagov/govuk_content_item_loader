@@ -1,3 +1,4 @@
 require "govuk_content_item_loader/govuk_graphql_traffic_rates"
 require "govuk_content_item_loader/govuk_conditional_content_item_loader"
 require "govuk_content_item_loader/version"
+require "govuk_content_item_loader/test_helpers"

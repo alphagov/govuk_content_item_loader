@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+* Add test helpers which provide stubs
+
 ## 1.1.2
 
 * Update dependencies

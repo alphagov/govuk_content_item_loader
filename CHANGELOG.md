@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+* Stub the requests in test helpers and add Plek as dependency 
+
 ## 1.2.0
 
 * Add test helpers which provide stubs

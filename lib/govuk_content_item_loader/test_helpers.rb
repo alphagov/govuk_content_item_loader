@@ -1,11 +1,8 @@
 require "json"
 
 module GovukConditionalContentItemLoaderTestHelpers
-  Response = Struct.new(:status, :body, :headers) do
-    def to_h
-      JSON.parse(body)
-    end
-  end
+  CONTENT_STORE_ENDPOINT = Plek.find("content-store")
+  PUBLISHING_API_ENDPOINT = Plek.find("publishing-api")
 
   # Stubs the loader returns a content item
   # The following options can be passed in:
@@ -14,22 +11,25 @@ module GovukConditionalContentItemLoaderTestHelpers
   #   :private  if true, the Cache-Control header will include the "private" directive. By default it
   #             will include "public"
   def stub_conditional_loader_returns_content_item(body, options = {})
-    body.to_json unless body.is_a?(String)
+    body = body.is_a?(String) ? body : body.to_json
     max_age = options.fetch(:max_age, 900)
     visibility = options[:private] ? "private" : "public"
 
-    response = Response.new(200, body, {
-      cache_control: "#{visibility}, max-age=#{max_age}",
-      date: Time.now.httpdate,
-    })
+    [CONTENT_STORE_ENDPOINT, PUBLISHING_API_ENDPOINT].each do |endpoint|
+      stub_request(:get, %r{#{Regexp.escape(endpoint)}}).to_return(
+        status: 200,
+        body: body,
+        headers: {
+          "Cache-Control" => "#{visibility}, max-age=#{max_age}",
+          "Date" => Time.now.httpdate,
+        },
+      )
+    end
 
-    loader = instance_double(GovukConditionalContentItemLoader, load: response)
+    loader = instance_double(GovukConditionalContentItemLoader, load: JSON.parse(body))
 
     allow(GovukConditionalContentItemLoader).to receive(:new).with(request: anything)
       .and_return(loader)
-    allow(loader).to receive(:load).and_return(body)
-
-    response
   end
 
   # Stubs the loader returns a error response

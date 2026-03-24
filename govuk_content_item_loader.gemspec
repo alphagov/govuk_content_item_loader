@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = %w[lib]
 
   spec.add_dependency "gds-api-adapters", ">= 99.3"
+  spec.add_dependency "plek", ">= 1.9.0"
   spec.add_dependency "railties", ">= 7.2"
 
   spec.add_development_dependency "climate_control"

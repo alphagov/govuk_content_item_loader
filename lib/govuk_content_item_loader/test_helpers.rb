@@ -32,27 +32,16 @@ module GovukConditionalContentItemLoaderTestHelpers
       .and_return(loader)
   end
 
-  # Stubs the loader returns a error response
+  # Stubs the loader returns a simple HTTP error response
   # The following options can be passed in:
   #
   #   :status         the HTTP status code for the error. Defaults to 404
-  #   :message        the error message. Defaults to "Not Found"
-  #   :error_details  optional additional error details to attach to the exception
-  #   :http_body      optional raw response body to attach to the exception
   def stub_conditional_loader_does_not_return_content_item(options = {})
-    status = options.fetch(:status, 404)
-    message = options.fetch(:message, "Not Found")
-    error_details = options[:error_details]
-    http_body = options[:http_body]
-
-    error = GdsApi::HTTPErrorResponse.new(status, message, error_details, http_body)
-
-    loader = instance_double(GovukConditionalContentItemLoader)
-
-    allow(GovukConditionalContentItemLoader).to receive(:new).with(request: anything)
-      .and_return(loader)
-    allow(loader).to receive(:load).and_raise(error)
-
-    error
+    [CONTENT_STORE_ENDPOINT, PUBLISHING_API_ENDPOINT].each do |endpoint|
+      stub_request(:get, %r{#{Regexp.escape(endpoint)}}).to_return(
+        status: options.fetch(:status, 404),
+        headers: {},
+      )
+    end
   end
 end

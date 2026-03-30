@@ -6,7 +6,7 @@ require "rails"
 RSpec.describe GovukConditionalContentItemLoader do
   let(:base_path) { "/foo" }
   let(:request) { double(path: base_path, params: {}, env: {}) }
-  let(:content_store_client) { instance_double(GdsApi) }
+  let(:content_store_client) { instance_double(GdsApi::ContentStore) }
   let(:publishing_api_client) { double }
   let(:loader) do
     described_class.new(

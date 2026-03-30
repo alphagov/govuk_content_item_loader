@@ -1,58 +1,26 @@
-require "json"
+require "gds_api/test_helpers/content_item_helpers"
+require "gds_api/test_helpers/content_store"
+require "gds_api/test_helpers/publishing_api"
 
 module GovukConditionalContentItemLoaderTestHelpers
-  CONTENT_STORE_ENDPOINT = Plek.find("content-store")
-  PUBLISHING_API_ENDPOINT = Plek.find("publishing-api")
+  include GdsApi::TestHelpers::ContentStore
+  include GdsApi::TestHelpers::PublishingApi
 
-  # Stubs the loader returns a content item
-  # The following options can be passed in:
-  #
-  #   :max_age  will set the max-age of the Cache-Control header in the response. Defaults to 900
-  #   :private  if true, the Cache-Control header will include the "private" directive. By default it
-  #             will include "public"
-  def stub_conditional_loader_returns_content_item(body, options = {})
-    body = body.is_a?(String) ? body : body.to_json
-    max_age = options.fetch(:max_age, 900)
-    visibility = options[:private] ? "private" : "public"
-
-    [CONTENT_STORE_ENDPOINT, PUBLISHING_API_ENDPOINT].each do |endpoint|
-      stub_request(:get, %r{#{Regexp.escape(endpoint)}}).to_return(
-        status: 200,
-        body: body,
-        headers: {
-          "Cache-Control" => "#{visibility}, max-age=#{max_age}",
-          "Date" => Time.now.httpdate,
-        },
-      )
-    end
-
-    loader = instance_double(GovukConditionalContentItemLoader, load: JSON.parse(body))
-
-    allow(GovukConditionalContentItemLoader).to receive(:new).with(request: anything)
-      .and_return(loader)
+  def stub_conditional_loader_returns_content_item_for_path(base_path, body = content_item_for_base_path(base_path), options = {})
+    stub_content_store_has_item(base_path, body, options)
+    stub_publishing_api_graphql_has_item(base_path, body, options)
   end
 
-  # Stubs the loader returns a error response
-  # The following options can be passed in:
-  #
-  #   :status         the HTTP status code for the error. Defaults to 404
-  #   :message        the error message. Defaults to "Not Found"
-  #   :error_details  optional additional error details to attach to the exception
-  #   :http_body      optional raw response body to attach to the exception
-  def stub_conditional_loader_does_not_return_content_item(options = {})
-    status = options.fetch(:status, 404)
-    message = options.fetch(:message, "Not Found")
-    error_details = options[:error_details]
-    http_body = options[:http_body]
+  def stub_conditional_loader_does_not_return_content_item_for_path(base_path, options = {})
+    stub_content_store_does_not_have_item(base_path, options)
+    stub_publishing_api_graphql_does_not_have_item(base_path)
+  end
 
-    error = GdsApi::HTTPErrorResponse.new(status, message, error_details, http_body)
+private
 
-    loader = instance_double(GovukConditionalContentItemLoader)
+  def content_item_for_base_path(base_path)
+    include GdsApi::TestHelpers::ContentItemHelpers
 
-    allow(GovukConditionalContentItemLoader).to receive(:new).with(request: anything)
-      .and_return(loader)
-    allow(loader).to receive(:load).and_raise(error)
-
-    error
+    super.merge("base_path" => base_path)
   end
 end

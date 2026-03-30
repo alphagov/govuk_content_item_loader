@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+* Update dependencies
+
 ## 1.2.1
 
 * Stub the requests in test helpers and add Plek as dependency 

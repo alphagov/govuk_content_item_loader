@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.1
 
 * Add `stub_conditional_content_loader_isnt_available` test helper.
 * Add `stub_conditional_content_loader_has_gone_item` test helper.

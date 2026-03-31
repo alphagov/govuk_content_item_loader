@@ -64,4 +64,15 @@ RSpec.describe GovukConditionalContentItemLoaderTestHelpers do
       expect { loader.load }.to raise_error(GdsApi::HTTPUnavailable)
     end
   end
+
+  describe ".stub_conditional_content_loader_has_gone_item" do
+    before do
+      stub_conditional_content_loader_has_gone_item(base_path)
+    end
+
+    it "returns an error for the base path" do
+      loader = GovukConditionalContentItemLoader.new(request:)
+      expect { loader.load }.to raise_error(GdsApi::HTTPGone)
+    end
+  end
 end

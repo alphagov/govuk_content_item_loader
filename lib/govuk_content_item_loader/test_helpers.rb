@@ -16,6 +16,16 @@ module GovukConditionalContentItemLoaderTestHelpers
     stub_publishing_api_graphql_does_not_have_item(base_path)
   end
 
+  def stub_conditional_content_loader_isnt_available
+    stub_content_store_isnt_available
+    stub_publishing_api_isnt_available
+  end
+
+  def stub_conditional_content_loader_has_gone_item(base_path)
+    stub_content_store_has_gone_item(base_path)
+    stub_publishing_api_graphql_has_gone_item(base_path)
+  end
+
 private
 
   def content_item_for_base_path(base_path)

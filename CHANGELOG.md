@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0
+
+* Drop support for Ruby 3.2
+
 ## 2.0.1
 
 * Add `stub_conditional_content_loader_isnt_available` test helper.

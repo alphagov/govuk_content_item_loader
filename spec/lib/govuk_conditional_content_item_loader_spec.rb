@@ -1,4 +1,5 @@
 require "spec_helper"
+require "gds_api"
 require "govuk_content_item_loader/govuk_conditional_content_item_loader"
 require "ostruct"
 require "rails"

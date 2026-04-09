@@ -85,6 +85,33 @@ RSpec.describe GovukConditionalContentItemLoader do
 
         loader.load
       end
+
+      context "when the loader is created with a different base path to the request" do
+        let(:override_base_path) { "/a-different-path" }
+        let(:loader) do
+          described_class.new(
+            request: request,
+            content_store_client: content_store_client,
+            publishing_api_client: publishing_api_client,
+            base_path: override_base_path,
+          )
+        end
+
+        before do
+          allow(loader).to receive(:can_load_from_graphql?).and_return(true)
+          allow(content_store_client).to receive(:content_item).with(override_base_path)
+          allow(publishing_api_client).to receive(:graphql_live_content_item).with(override_base_path)
+        end
+
+        it "uses the alternative path" do
+          expect(content_store_client).to receive(:content_item).with(override_base_path)
+          expect(content_store_client).not_to receive(:content_item).with(base_path)
+          expect(publishing_api_client).to receive(:graphql_live_content_item).with(override_base_path)
+          expect(publishing_api_client).not_to receive(:graphql_live_content_item).with(base_path)
+
+          loader.load
+        end
+      end
     end
   end
 

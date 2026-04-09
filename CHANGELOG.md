@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Add optional `base_path` argument to `GovukConditionalContentItemLoader`, allowing a different path from the original request to be retrieved.
+
 ## 2.1.0
 
 * Drop support for Ruby 3.2

@@ -1,11 +1,11 @@
 class GovukConditionalContentItemLoader
   attr_reader :content_store_client, :publishing_api_client, :request, :base_path
 
-  def initialize(request:, content_store_client: GdsApi.content_store, publishing_api_client: GdsApi.publishing_api)
+  def initialize(request:, content_store_client: GdsApi.content_store, publishing_api_client: GdsApi.publishing_api, base_path: nil)
     @content_store_client = content_store_client
     @publishing_api_client = publishing_api_client
     @request = request
-    @base_path = request&.path
+    @base_path = base_path || request&.path
   end
 
   def load

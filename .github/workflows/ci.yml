@@ -26,13 +26,13 @@ jobs:
   dependency-review:
     name: Dependency Review scan
     uses: alphagov/govuk-infrastructure/.github/workflows/dependency-review.yml@main
-  
+
   # Run the test suite against multiple Ruby and Rails versions
   test_matrix:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [3.3, 3.4]
+        ruby: [3.3, 3.4, 4.0]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

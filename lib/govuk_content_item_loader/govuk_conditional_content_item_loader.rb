@@ -1,9 +1,9 @@
 class GovukConditionalContentItemLoader
   attr_reader :content_store_client, :publishing_api_client, :request, :base_path
 
-  def initialize(request:, content_store_client: GdsApi.content_store, publishing_api_client: GdsApi.publishing_api, base_path: nil)
+  def initialize(request:, content_store_client: GdsApi.content_store, publishing_api_client: nil, base_path: nil)
     @content_store_client = content_store_client
-    @publishing_api_client = publishing_api_client
+    @publishing_api_client = publishing_api_client || default_publishing_api_client
     @request = request
     @base_path = base_path || request&.path
   end
@@ -15,6 +15,8 @@ class GovukConditionalContentItemLoader
   end
 
   def can_load_from_graphql?
+    return false unless publishing_api_client
+
     return false unless request
 
     return false if draft_host?
@@ -53,6 +55,14 @@ private
     }
 
     request.env["govuk.prometheus_labels"] = prometheus_labels.merge(hash)
+  end
+
+  def publishing_api_service_uri_configured?
+    !ENV["PLEK_SERVICE_PUBLISHING_API_URI"].nil?
+  end
+
+  def default_publishing_api_client
+    publishing_api_service_uri_configured? ? GdsApi.publishing_api : nil
   end
 
   def draft_host?

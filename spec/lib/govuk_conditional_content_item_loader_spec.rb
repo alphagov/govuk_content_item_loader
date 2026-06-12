@@ -34,6 +34,48 @@ RSpec.describe GovukConditionalContentItemLoader do
     allow(Rails).to receive(:application).and_return(double(config: config))
   end
 
+  describe "#initialize" do
+    context "when publishing_api_client is not provided" do
+      it "uses GdsApi.publishing_api if publishing API service URI is configured" do
+        ClimateControl.modify(
+          PLEK_SERVICE_PUBLISHING_API_URI: "http://publishing-api-read-replica",
+        ) do
+          loader = described_class.new(
+            request: request,
+            content_store_client: content_store_client,
+            publishing_api_client: nil,
+          )
+
+          expect(loader.publishing_api_client).to be_a(GdsApi::PublishingApi)
+        end
+      end
+
+      it "sets publishing_api_client to nil if publishing API service URI is not configured" do
+        ClimateControl.modify({}) do
+          loader = described_class.new(
+            request: request,
+            content_store_client: content_store_client,
+            publishing_api_client: nil,
+          )
+
+          expect(loader.publishing_api_client).to be_nil
+        end
+      end
+    end
+
+    it "uses the provided publishing_api_client" do
+      custom_client = double
+
+      loader = described_class.new(
+        request: request,
+        content_store_client: content_store_client,
+        publishing_api_client: custom_client,
+      )
+
+      expect(loader.publishing_api_client).to eq(custom_client)
+    end
+  end
+
   describe "#load" do
     context "when can load from GraphQL" do
       before do
@@ -116,6 +158,16 @@ RSpec.describe GovukConditionalContentItemLoader do
   end
 
   describe "#can_load_from_graphql?" do
+    it "returns false if Publishing API adapter is not configured" do
+      loader = described_class.new(
+        request: nil,
+        content_store_client: content_store_client,
+        publishing_api_client: nil,
+      )
+
+      expect(loader.can_load_from_graphql?).to be false
+    end
+
     it "returns false if request is nil" do
       loader = described_class.new(
         request: nil,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.0
+
+* Don't initialise Publishing API client when the Publishing API connection is not configured
+
 ## 2.1.3
 
 * Update dependencies

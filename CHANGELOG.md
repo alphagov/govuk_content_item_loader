@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Comment out PR template
+
 ## 2.2.3
 
 * Update dependencies
